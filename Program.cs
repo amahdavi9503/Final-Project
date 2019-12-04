@@ -47,6 +47,10 @@ namespace FinalProject
                     else if (choice == "2")
                     {
                         // Add Product
+
+                        //Product product = InputProduct(db);  *******???
+                        //Product NewProduct = InputProduct(db);  *******???
+
                         Console.Write("Enter a name for a new Product: ");
                         var product = new Product { ProductName = Console.ReadLine() };                
 
@@ -193,29 +197,28 @@ namespace FinalProject
                     else if (choice == "3")
                     {
                         // Edit Product
-                        Console.WriteLine("Choose the productID to edit:");
+
                         var db = new ProductCategoriesContext();
-                        var product = GetProduct(db);
-                        if (product != null)
-                        {
-                            // Input Product
-                            Product UpdatedProduct = InputProduct(db);
-                            if (UpdatedProduct != null)
-                            {                             
-                                UpdatedProduct.ProductId = product.ProductId;
+                        Console.WriteLine("Choose the productID to edit:");
+                        var EditProd = GetProduct(db);
+                        //Console.WriteLine();
+                        
+                        
+                        //int Id = Int32.Parse(Console.ReadLine());
+                        //Product EditProd = db.Products.FirstOrDefault(p => p.ProductId == Id);
 
-                                Console.WriteLine($"Enter new Product Name for : { product.ProductName}");
-                                UpdatedProduct.ProductName = product.ProductName;
+                        if (EditProd != null)
+                        {                             
+                            Console.Write($"Enter new Product Name for { EditProd.ProductName}: ");
+                            Console.WriteLine();
+                            EditProd.ProductName = Console.ReadLine();
 
-                                Console.WriteLine($"Enter new Unit Price for : { product.ProductName}");
-                                UpdatedProduct.UnitPrice = product.UnitPrice;
+                            Console.Write($"Enter new Unit Price: ");
+                            Console.WriteLine();
+                            EditProd.UnitPrice = Decimal.Parse(Console.ReadLine());
 
-                                Console.WriteLine($"Active or Discontinued? (A/D) : { product.ProductName}");
-                                UpdatedProduct.Discontinued = product.Discontinued;
-
-                                db.EditProduct(UpdatedProduct);
-                                logger.Info("Product (id: {productid}) updated", UpdatedProduct.ProductId);
-                            }
+                            db.EditProduct(EditProd);
+                            logger.Info("Product (id: {productid}) updated", EditProd.ProductId);
                         }
                     }  
 
@@ -249,8 +252,6 @@ namespace FinalProject
                 {
                     logger.Error("Ivalid option. Enter A or D");
                 }
-
-
 
             ValidationContext context = new ValidationContext(product, null, null);
             List<ValidationResult> results = new List<ValidationResult>();
@@ -297,7 +298,7 @@ namespace FinalProject
                 {
                     return product;
                 }
-            } 
+            }
 
             logger.Error("Invalid Product Id");
             return null;
