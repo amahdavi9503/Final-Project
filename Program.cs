@@ -44,10 +44,8 @@ namespace FinalProject
                             Console.WriteLine(item.ProductName);
                         }
                     }
-                    else if (choice == "2")
-                    {
-                        // Add Product
-
+                    else if (choice == "2")     // Add Product
+                    {                      
                         //Product product = InputProduct(db);  *******???
                         //Product NewProduct = InputProduct(db);  *******???
 
@@ -194,28 +192,34 @@ namespace FinalProject
                     //          logger.Info("Post (id: {postid}) deleted", post.PostId);
                     //      }
                     //  }
-                    else if (choice == "3")
+                    else if (choice == "3")   // Edit Product
                     {
-                        // Edit Product
-
+                        // Display Products
                         var db = new ProductCategoriesContext();
-                        Console.WriteLine("Choose the productID to edit:");
-                        var EditProd = GetProduct(db);
-                        //Console.WriteLine();
-                        
-                        
-                        //int Id = Int32.Parse(Console.ReadLine());
-                        //Product EditProd = db.Products.FirstOrDefault(p => p.ProductId == Id);
+                        var query = db.Products.OrderBy(b => b.ProductName);
+
+                        Console.WriteLine($"{query.Count()} Products returned");
+                        foreach (var item in query)
+                        {
+                            Console.WriteLine($"  {item.ProductId}) {item.ProductName}");
+                        }
+
+                        Console.WriteLine();
+                        Console.Write("Choose the productID to edit:");
+                        Console.WriteLine();
+
+                        int Id = Int32.Parse(Console.ReadLine());
+                        Product EditProd = db.Products.FirstOrDefault(p => p.ProductId == Id);
 
                         if (EditProd != null)
                         {                             
                             Console.Write($"Enter new Product Name for { EditProd.ProductName}: ");
-                            Console.WriteLine();
                             EditProd.ProductName = Console.ReadLine();
+                            Console.WriteLine();
 
                             Console.Write($"Enter new Unit Price: ");
-                            Console.WriteLine();
                             EditProd.UnitPrice = Decimal.Parse(Console.ReadLine());
+                            Console.WriteLine();
 
                             db.EditProduct(EditProd);
                             logger.Info("Product (id: {productid}) updated", EditProd.ProductId);
