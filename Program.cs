@@ -22,7 +22,7 @@ namespace FinalProject
                 {
                     Console.WriteLine("Enter your selection:");
                     Console.WriteLine("1) Display all products");
-                    Console.WriteLine("2) Add Product");
+                    Console.WriteLine("2) Add Product***");
                     Console.WriteLine("3) Edit Product");
                     Console.WriteLine("4) Display All Products");
                     Console.WriteLine("5) Display a Specific Product");
@@ -67,6 +67,25 @@ namespace FinalProject
                             else
                             {
                                 logger.Info("Validation passed");
+
+                               // Enter the rest of the fields for the new product 
+                                Console.Write("Enter CategoryID for the new Product: ");
+                                product.CategoryId = Convert.ToInt32(Console.ReadLine());
+
+                                Console.Write("Enter Product Status: A = Active; D = Discontinued: ");
+                                if (Console.ReadLine().ToUpper() == "A")
+                                {
+                                    product.Discontinued = false;
+                                }
+                                else if (Console.ReadLine().ToUpper() == "D")
+                                {
+                                    product.Discontinued = true;
+                                }
+                                else
+                                {
+                                    logger.Error("Ivalid option. Enter A or D");
+                                }
+
                                 // Save Product to db
                                 db.AddProduct(product);
                                 logger.Info("Product added - {ProductName}", product.ProductName);
@@ -170,26 +189,27 @@ namespace FinalProject
                     //          logger.Info("Post (id: {postid}) deleted", post.PostId);
                     //      }
                     //  }
-                    //  else if (choice == "6")
-                    //  {
-                    //      // edit post
-                    //      Console.WriteLine("Choose the post to edit:");
-                    //      var db = new BloggingContext();
-                    //      var post = GetPost(db);
-                    //      if (post != null)
-                    //      {
-                    //          // input post
-                    //          Post UpdatedPost = InputPost(db);
-                    //          if (UpdatedPost != null)
-                    //          {
-                    //              UpdatedPost.PostId = post.PostId;
-                    //              db.EditPost(UpdatedPost);
-                    //              logger.Info("Post (id: {postid}) updated", UpdatedPost.PostId);
-                    //          }
-                    //      }
-                    //  }  
+                    else if (choice == "3")
+                    {
+                        // Edit Product
+                        Console.WriteLine("Choose the product to edit:");
+                        var db = new ProductCategoriesContext();
+                        var product = GetProduct(db);
+                        if (product != null)
+                        {
+                            // Input Product
+                            Product UpdatedProduct = InputProduct(db);
+                            if (UpdatedProduct != null)
+                            {                             
+                                UpdatedProduct.ProductId = product.ProductId;
+                           //***     Console.WriteLine($"Enter new Unit Price for : { product.ProductName}");
+                                db.EditProduct(UpdatedProduct);
+                                logger.Info("Product (id: {productid}) updated", UpdatedProduct.ProductId);
+                            }
+                        }
+                    }  
 
-                    Console.WriteLine();
+                        Console.WriteLine();
                 } while (choice.ToLower() != "q");
             }
             catch (Exception ex)
@@ -198,22 +218,37 @@ namespace FinalProject
             }
             logger.Info("Program ended");
         }
-/*
-        public static Post InputPost(BloggingContext db)
-        {
-            Post post = new Post();
-            Console.WriteLine("Enter the Post title");
-            post.Title = Console.ReadLine();
-            Console.WriteLine("Enter the Post content");
-            post.Content = Console.ReadLine();
 
-            ValidationContext context = new ValidationContext(post, null, null);
+        public static Product InputProduct(ProductCategoriesContext db)
+        {
+            Product product = new Product();
+            Console.WriteLine("Enter the Product Name");
+            product.ProductName = Console.ReadLine();
+            Console.WriteLine("Enter the Product Category ID");
+            product.CategoryId = Convert.ToInt32(Console.ReadLine());
+            Console.Write("Enter Product Status: A = Active; D = Discontinued: ");
+                if (Console.ReadLine().ToUpper() == "A")
+                {
+                    product.Discontinued = false;
+                }
+                else if (Console.ReadLine().ToUpper() == "D")
+                {
+                    product.Discontinued = true;
+                }
+                else
+                {
+                    logger.Error("Ivalid option. Enter A or D");
+                }
+
+
+
+            ValidationContext context = new ValidationContext(product, null, null);
             List<ValidationResult> results = new List<ValidationResult>();
 
-            var isValid = Validator.TryValidateObject(post, context, results, true);
+            var isValid = Validator.TryValidateObject(product, context, results, true);
             if (isValid)
             {
-                return post;
+                return product;
             }
             else
             {
@@ -225,39 +260,38 @@ namespace FinalProject
             return null;
         }
 
-
-        public static Post GetPost(BloggingContext db)
+        public static Product GetProduct(ProductCategoriesContext db)
         {
-            // display all blogs & posts
-            // force eager loading of Posts
-            var blogs = db.Blogs.Include("Posts").OrderBy(b => b.Name);
-            foreach (Blog b in blogs)
+            // Display all Categories and Products
+            // Force Eager Loading of Products
+            var categories = db.Categories.Include("Products").OrderBy(b => b.CategoryName);
+            foreach (Category b in categories)
             {
-                Console.WriteLine(b.Name);
-                if (b.Posts.Count() == 0)
+                Console.WriteLine(b.CategoryName);
+                if (b.Products.Count() == 0)
                 {
-                    Console.WriteLine($"  <no posts>");
+                    Console.WriteLine($"  <No Products>");
                 }
                 else
                 {
-                    foreach (Post p in b.Posts)
+                    foreach (Product p in b.Products)
                     {
-                        Console.WriteLine($"  {p.PostId}) {p.Title}");
+                        Console.WriteLine($"  {p.ProductId}) {p.ProductName}");
                     }
                 }
             }
-            if (int.TryParse(Console.ReadLine(), out int PostId))
+            if (int.TryParse(Console.ReadLine(), out int ProductId))
             {
-                Post post = db.Posts.FirstOrDefault(p => p.PostId == PostId);
-                if (post != null)
+                Product product = db.Products.FirstOrDefault(p => p.ProductId == ProductId);
+                if (product != null)
                 {
-                    return post;
+                    return product;
                 }
             } 
 
-            logger.Error("Invalid Post Id");
+            logger.Error("Invalid Product Id");
             return null;
         }  
-*/
+
     } 
 }

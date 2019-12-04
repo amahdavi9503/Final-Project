@@ -21,7 +21,9 @@ namespace FinalProject.Models
         public Int16 UnitsInStock { get; set; }
         public Int16 UnitsOnOrder { get; set; }
         public Int16 ReorderLevel { get; set; }
-        public Boolean Discontinued { get; set; }
+
+        [Required]
+        public bool Discontinued { get; set; }
     }
 }
 

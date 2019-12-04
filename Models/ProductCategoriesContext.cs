@@ -10,10 +10,30 @@ namespace FinalProject.Models
 {
     public class ProductCategoriesContext : DbContext
     {
-         public ProductCategoriesContext() : base("name=ProductContext") { }
-        public DbSet<Category> Cateogries { get; set; }
+        public ProductCategoriesContext() : base("name=ProductContext") { }
+        public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
 
+        public void AddCategory(Category category)
+        {
+            this.Categories.Add(category);
+            this.SaveChanges();
+        }
+
+        public void EditProduct(Product UpdatedProduct)
+        {
+            Product product = this.Products.Find(UpdatedProduct.ProductId);
+            product.ProductName = UpdatedProduct.ProductName;
+            product.UnitPrice = UpdatedProduct.UnitPrice;
+            product.Discontinued= UpdatedProduct.Discontinued;
+            this.SaveChanges();
+        }
+
+        public void DeleteProduct(Product product)
+        {
+            this.Products.Remove(product);
+            this.SaveChanges();
+        }
         public void AddProduct(Product product)
         {
             this.Products.Add(product);
