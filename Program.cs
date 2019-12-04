@@ -73,11 +73,12 @@ namespace FinalProject
                                 product.CategoryId = Convert.ToInt32(Console.ReadLine());
 
                                 Console.Write("Enter Product Status: A = Active; D = Discontinued: ");
-                                if (Console.ReadLine().ToUpper() == "A")
+                                string selection = Console.ReadLine().ToUpper();
+                                if (selection == "A")
                                 {
                                     product.Discontinued = false;
                                 }
-                                else if (Console.ReadLine().ToUpper() == "D")
+                                else if (selection == "D")
                                 {
                                     product.Discontinued = true;
                                 }
@@ -192,7 +193,7 @@ namespace FinalProject
                     else if (choice == "3")
                     {
                         // Edit Product
-                        Console.WriteLine("Choose the product to edit:");
+                        Console.WriteLine("Choose the productID to edit:");
                         var db = new ProductCategoriesContext();
                         var product = GetProduct(db);
                         if (product != null)
@@ -202,7 +203,16 @@ namespace FinalProject
                             if (UpdatedProduct != null)
                             {                             
                                 UpdatedProduct.ProductId = product.ProductId;
-                           //***     Console.WriteLine($"Enter new Unit Price for : { product.ProductName}");
+
+                                Console.WriteLine($"Enter new Product Name for : { product.ProductName}");
+                                UpdatedProduct.ProductName = product.ProductName;
+
+                                Console.WriteLine($"Enter new Unit Price for : { product.ProductName}");
+                                UpdatedProduct.UnitPrice = product.UnitPrice;
+
+                                Console.WriteLine($"Active or Discontinued? (A/D) : { product.ProductName}");
+                                UpdatedProduct.Discontinued = product.Discontinued;
+
                                 db.EditProduct(UpdatedProduct);
                                 logger.Info("Product (id: {productid}) updated", UpdatedProduct.ProductId);
                             }
