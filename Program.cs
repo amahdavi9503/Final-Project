@@ -21,8 +21,8 @@ namespace FinalProject
                 do
                 {
                     Console.WriteLine("Enter your selection:");
-                    Console.WriteLine("1) Display ALL product names and IDs");
-                    Console.WriteLine("2) Add Product***");
+                    Console.WriteLine("1) Display products");
+                    Console.WriteLine("2) Add Product");
                     Console.WriteLine("3) Edit Product");
                     Console.WriteLine("4) Display a Specific Product");
                     Console.WriteLine("Q to quit");
@@ -32,25 +32,86 @@ namespace FinalProject
                     Console.Clear();
                     logger.Info("Option {choice} selected", choice);
 
-                    if (choice == "1")      // Display ALL Product names and IDs
+                    if (choice == "0")      // Display ALL Product names and IDs
                     {
                         var db = new ProductCategoriesContext();
                         var query = db.Products.OrderBy(b => b.ProductName);
 
-                        //Console.WriteLine($"{query.Count()} Products returned");
                         foreach (var item in query)
                         {
-                            //Console.WriteLine(item.ProductName);
                             Console.WriteLine($"  {item.ProductId}) {item.ProductName}");
                         }
 
                         Console.WriteLine($"{query.Count()} Products returned");
                     }
+
+                    else if (choice == "1")      // Display Products
+                    {
+                        var db = new ProductCategoriesContext();
+                        var query = db.Products.OrderBy(b => b.ProductName);
+                        var DiscontinuedQuery = db.Products.Where(b => b.Discontinued == true).OrderBy(b => b.ProductName);
+                        var ActiveQuery = db.Products.Where(b => b.Discontinued == false).OrderBy(b => b.ProductName);
+
+                        Console.WriteLine("Enter your selection:");
+                        Console.WriteLine("1) Display ALL products");
+                        Console.WriteLine("2) Display Discontinued Products");
+                        Console.WriteLine("3) Display Active Products");
+                        string Option = Console.ReadLine();
+
+                        Console.WriteLine("{0,-15}{1,-40}{2,-15}", "ProductID", "Product Name", "Product Status");
+                        Console.WriteLine("{0,-15}{1,-40}{2,-15}", "---------", "--------------", "--------------");
+
+                        if (Option == "1")  //Display all products
+                        {
+                            string ProductStatus;
+                            foreach (var item in query)
+                            {
+                                if (item.Discontinued == false)
+                                {
+                                    ProductStatus = "Active";
+                                }
+                                else
+                                {
+                                    ProductStatus = "Discontinued";
+                                }
+
+                                Console.WriteLine($"{item.ProductId,-15}{item.ProductName,-40}{ProductStatus,-15}");
+                            }
+
+                            Console.WriteLine();
+                            Console.WriteLine($"{query.Count()} Products returned");
+                            Console.WriteLine();
+                        }
+
+                        else if (Option == "2")  //Display Discontinued Products
+                        {
+                            foreach (var item in DiscontinuedQuery)
+                            {
+                                Console.WriteLine($"{item.ProductId,-15}{item.ProductName,-40}{"Discontinued",-15}");
+                            }
+
+                            Console.WriteLine();
+                            Console.WriteLine($"{DiscontinuedQuery.Count()} Products returned");
+                            Console.WriteLine();
+                        }
+
+                        else if (Option == "3")  //Display Active Products
+                        {
+                            foreach (var item in ActiveQuery)
+                            {
+
+                                Console.WriteLine($"{item.ProductId,-15}{item.ProductName,-40}{"Active",-15}");  
+                            }
+
+                            Console.WriteLine();
+                            Console.WriteLine($"{ActiveQuery.Count()} Products returned");
+                            Console.WriteLine();
+                        }
+
+                    }
+
                     else if (choice == "2")     // Add Product
                     {
-                        //Product product = InputProduct(db);  *******???
-                        //Product NewProduct = InputProduct(db);  *******???
-
                         Console.Write("Enter a name for a new Product: ");
                         var product = new Product { ProductName = Console.ReadLine() };
 
@@ -79,22 +140,6 @@ namespace FinalProject
                                 Console.Write("Enter Product's Unit Price: ");
                                 product.UnitPrice = Convert.ToDecimal(Console.ReadLine());
 
-                                //Console.Write("Enter Product Status: A = Active; D = Discontinued: ");
-                                //string selection = Console.ReadLine().ToUpper();
-                                //if (selection == "A")
-                                //{
-                                //    product.Discontinued = false;
-                                //}
-                                //else if (selection == "D")
-                                //{
-                                //    product.Discontinued = true;
-                                //}
-                                //else
-                                //{
-                                //    logger.Error("Ivalid option. Enter A or D");
-                                //}
-
-                                // Save Product to db
                                 db.AddProduct(product);
                                 logger.Info("Product added - {ProductName}", product.ProductName);
                             }
@@ -107,96 +152,7 @@ namespace FinalProject
                             }
                         }
                     }
-                    //  else if (choice == "3")
-                    //  {
-                    //      // Create Post
-                    //      var db = new BloggingContext();
-                    //      var query = db.Blogs.OrderBy(b => b.BlogId);
 
-                    //      Console.WriteLine("Select the blog you would to post to:");
-                    //      foreach (var item in query)
-                    //      {
-                    //          Console.WriteLine($"{item.BlogId}) {item.Name}");
-                    //      }
-                    //      if (int.TryParse(Console.ReadLine(), out int BlogId))
-                    //      {
-                    //          if (db.Blogs.Any(b => b.BlogId == BlogId))
-                    //          {
-                    //              Post post = InputPost(db);
-                    //              if (post != null)
-                    //              {
-                    //                  post.BlogId = BlogId;
-                    //                  db.AddPost(post);
-                    //                  logger.Info("Post added - {title}", post.Title);
-                    //              }
-                    //          }
-                    //          else
-                    //          {
-                    //              logger.Error("There are no Blogs saved with that Id");
-                    //          }
-                    //      }
-                    //      else
-                    //      {
-                    //          logger.Error("Invalid Blog Id");
-                    //      }
-                    //  }
-                    //  else if (choice == "4")
-                    //  {
-                    //      // Display Posts
-                    //      var db = new BloggingContext();
-                    //      var query = db.Blogs.OrderBy(b => b.BlogId);
-                    //      Console.WriteLine("Select the blog's posts to display:");
-                    //      Console.WriteLine("0) Posts from all blogs");
-                    //      foreach (var item in query)
-                    //      {
-                    //          Console.WriteLine($"{item.BlogId}) Posts from {item.Name}");
-                    //      }
-
-                    //      if (int.TryParse(Console.ReadLine(), out int BlogId))
-                    //      {
-                    //          IEnumerable<Post> Posts;
-                    //          if (BlogId != 0 && db.Blogs.Count(b => b.BlogId == BlogId) == 0)
-                    //          {
-                    //              logger.Error("There are no Blogs saved with that Id");
-                    //          }
-                    //          else
-                    //          {
-                    //              // display posts from all blogs
-                    //              Posts = db.Posts.OrderBy(p => p.Title);
-                    //              if (BlogId == 0)
-                    //              {
-                    //                  // display all posts from all blogs
-                    //                  Posts = db.Posts.OrderBy(p => p.Title);
-                    //              }
-                    //              else
-                    //              {
-                    //                  // display post from selected blog
-                    //                  Posts = db.Posts.Where(p => p.BlogId == BlogId).OrderBy(p => p.Title);
-                    //              }
-                    //              Console.WriteLine($"{Posts.Count()} post(s) returned");
-                    //              foreach (var item in Posts)
-                    //              {
-                    //                  Console.WriteLine($"Blog: {item.Blog.Name}\nTitle: {item.Title}\nContent: {item.Content}\n");
-                    //              }
-                    //          }
-                    //      }
-                    //      else
-                    //      {
-                    //          logger.Error("Invalid Blog Id");
-                    //      }
-                    //  }
-                    //  else if (choice == "5")
-                    //  {
-                    //      // delete post
-                    //      Console.WriteLine("Choose the post to delete:");
-                    //      var db = new BloggingContext();
-                    //      var post = GetPost(db);
-                    //      if (post != null)
-                    //      {
-                    //          db.DeletePost(post);
-                    //          logger.Info("Post (id: {postid}) deleted", post.PostId);
-                    //      }
-                    //  }
                     else if (choice == "3")   // Edit Product
                     {
                         // Display Products
@@ -234,7 +190,6 @@ namespace FinalProject
                     else if (choice == "4")      // Display a specific product
                     {
                     var db = new ProductCategoriesContext();
-                    // var query = db.Products.OrderBy(b => b.ProductName);
                     var query = db.Products.OrderBy(b => b.ProductId);
 
                     Console.Write("Enter ProductID for the product you want to display: ");
@@ -253,10 +208,10 @@ namespace FinalProject
                                 foreach (var item in query)
                                 {
                                     Console.WriteLine($"Product Name: {item.ProductName}\nCategoryID: {item.CategoryId}\n" +
-                                                      $"SupplierID: {item.SupplierId}\nQty Per Unit: {item.QuantityPerUnit}\n" +
+                                                      $"Qty Per Unit: {item.QuantityPerUnit}\n" +
                                                       $"Unit Price: {item.UnitPrice}\nUnits in Stock: {item.UnitsInStock}\n" +
                                                       $"Units on Order: {item.UnitsOnOrder}\nReorder Level: {item.ReorderLevel}\n" +
-                                                      $"Discontinued Flag: {item.Discontinued}");
+                                                      $"Discontinued Flag: {item.Discontinued}");   //$"SupplierID: {item.SupplierId}\n
                                 }
                             }
                         }
