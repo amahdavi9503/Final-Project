@@ -231,22 +231,38 @@ namespace FinalProject
                         }
                     }
 
-                    else if (choice == "4")      // Display a specific product*****
+                    else if (choice == "4")      // Display a specific product
                     {
-                        var db = new ProductCategoriesContext();
-                        var query = db.Products.OrderBy(b => b.ProductName);
+                    var db = new ProductCategoriesContext();
+                    // var query = db.Products.OrderBy(b => b.ProductName);
+                    var query = db.Products.OrderBy(b => b.ProductId);
 
-                        //Console.WriteLine($"{query.Count()} Products returned");
-                        foreach (var item in query)
+                    Console.Write("Enter ProductID for the product you want to display: ");
+                    Console.WriteLine();
+
+                        if (int.TryParse(Console.ReadLine(), out int ProductId))
                         {
-                            //Console.WriteLine(item.ProductName);
-                            Console.WriteLine($"  {item.ProductId}) {item.ProductName}");
+                            if (db.Products.Count(b => b.ProductId == ProductId) == 0)
+                            {
+                                logger.Error("There are no Products saved with that Id");
+                            }
+                            else
+                            {
+                                query = db.Products.Where(p => p.ProductId == ProductId).OrderBy(p => p.ProductName);
+
+                                foreach (var item in query)
+                                {
+                                    Console.WriteLine($"Product Name: {item.ProductName}\nCategoryID: {item.CategoryId}\n" +
+                                                      $"SupplierID: {item.SupplierId}\nQty Per Unit: {item.QuantityPerUnit}\n" +
+                                                      $"Unit Price: {item.UnitPrice}\nUnits in Stock: {item.UnitsInStock}\n" +
+                                                      $"Units on Order: {item.UnitsOnOrder}\nReorder Level: {item.ReorderLevel}\n" +
+                                                      $"Discontinued Flag: {item.Discontinued}");
+                                }
+                            }
                         }
-
-                        Console.WriteLine($"{query.Count()} Products returned");
-
                         Console.WriteLine();
                     }
+
                 } while (choice.ToLower() != "q");
             }
             catch (Exception ex)
