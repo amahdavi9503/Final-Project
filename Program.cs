@@ -21,36 +21,38 @@ namespace FinalProject
                 do
                 {
                     Console.WriteLine("Enter your selection:");
-                    Console.WriteLine("1) Display all products");
+                    Console.WriteLine("1) Display ALL product names and IDs");
                     Console.WriteLine("2) Add Product***");
                     Console.WriteLine("3) Edit Product");
-                    Console.WriteLine("4) Display All Products");
-                    Console.WriteLine("5) Display a Specific Product");
+                    Console.WriteLine("4) Display a Specific Product");
+                    Console.WriteLine("Q to quit");
                     //Console.WriteLine("6) Edit Post");
                     //Console.WriteLine("Enter q to quit");
                     choice = Console.ReadLine();
                     Console.Clear();
                     logger.Info("Option {choice} selected", choice);
 
-                    if (choice == "1")
+                    if (choice == "1")      // Display ALL Product names and IDs
                     {
-                        // Display Products
                         var db = new ProductCategoriesContext();
                         var query = db.Products.OrderBy(b => b.ProductName);
 
-                        Console.WriteLine($"{query.Count()} Products returned");
+                        //Console.WriteLine($"{query.Count()} Products returned");
                         foreach (var item in query)
                         {
-                            Console.WriteLine(item.ProductName);
+                            //Console.WriteLine(item.ProductName);
+                            Console.WriteLine($"  {item.ProductId}) {item.ProductName}");
                         }
+
+                        Console.WriteLine($"{query.Count()} Products returned");
                     }
                     else if (choice == "2")     // Add Product
-                    {                      
+                    {
                         //Product product = InputProduct(db);  *******???
                         //Product NewProduct = InputProduct(db);  *******???
 
                         Console.Write("Enter a name for a new Product: ");
-                        var product = new Product { ProductName = Console.ReadLine() };                
+                        var product = new Product { ProductName = Console.ReadLine() };
 
                         ValidationContext context = new ValidationContext(product, null, null);
                         List<ValidationResult> results = new List<ValidationResult>();
@@ -70,24 +72,27 @@ namespace FinalProject
                             {
                                 logger.Info("Validation passed");
 
-                               // Enter the rest of the fields for the new product 
+                                // Enter the rest of the fields for the new product 
                                 Console.Write("Enter CategoryID for the new Product: ");
                                 product.CategoryId = Convert.ToInt32(Console.ReadLine());
 
-                                Console.Write("Enter Product Status: A = Active; D = Discontinued: ");
-                                string selection = Console.ReadLine().ToUpper();
-                                if (selection == "A")
-                                {
-                                    product.Discontinued = false;
-                                }
-                                else if (selection == "D")
-                                {
-                                    product.Discontinued = true;
-                                }
-                                else
-                                {
-                                    logger.Error("Ivalid option. Enter A or D");
-                                }
+                                Console.Write("Enter Product's Unit Price: ");
+                                product.UnitPrice = Convert.ToDecimal(Console.ReadLine());
+
+                                //Console.Write("Enter Product Status: A = Active; D = Discontinued: ");
+                                //string selection = Console.ReadLine().ToUpper();
+                                //if (selection == "A")
+                                //{
+                                //    product.Discontinued = false;
+                                //}
+                                //else if (selection == "D")
+                                //{
+                                //    product.Discontinued = true;
+                                //}
+                                //else
+                                //{
+                                //    logger.Error("Ivalid option. Enter A or D");
+                                //}
 
                                 // Save Product to db
                                 db.AddProduct(product);
@@ -212,7 +217,7 @@ namespace FinalProject
                         Product EditProd = db.Products.FirstOrDefault(p => p.ProductId == Id);
 
                         if (EditProd != null)
-                        {                             
+                        {
                             Console.Write($"Enter new Product Name for { EditProd.ProductName}: ");
                             EditProd.ProductName = Console.ReadLine();
                             Console.WriteLine();
@@ -224,9 +229,24 @@ namespace FinalProject
                             db.EditProduct(EditProd);
                             logger.Info("Product (id: {productid}) updated", EditProd.ProductId);
                         }
-                    }  
+                    }
+
+                    else if (choice == "4")      // Display a specific product*****
+                    {
+                        var db = new ProductCategoriesContext();
+                        var query = db.Products.OrderBy(b => b.ProductName);
+
+                        //Console.WriteLine($"{query.Count()} Products returned");
+                        foreach (var item in query)
+                        {
+                            //Console.WriteLine(item.ProductName);
+                            Console.WriteLine($"  {item.ProductId}) {item.ProductName}");
+                        }
+
+                        Console.WriteLine($"{query.Count()} Products returned");
 
                         Console.WriteLine();
+                    }
                 } while (choice.ToLower() != "q");
             }
             catch (Exception ex)
