@@ -20,11 +20,21 @@ namespace FinalProject
                 string choice;
                 do
                 {
+
                     Console.WriteLine("Enter your selection:");
-                    Console.WriteLine("1) Display products");
+                    Console.WriteLine();
+                    Console.WriteLine("========= Products ==========");
+                    Console.WriteLine("1) Display Products");
                     Console.WriteLine("2) Add Product");
                     Console.WriteLine("3) Edit Product");
                     Console.WriteLine("4) Display a Specific Product");
+                    Console.WriteLine();
+                    Console.WriteLine("======== Categories =========");
+                    Console.WriteLine("5) Display Categories");
+                    Console.WriteLine("6) Add Category");
+                    Console.WriteLine("7) Edit Category");
+                    Console.WriteLine("8) Display a Specific Category");
+                    Console.WriteLine();
                     Console.WriteLine("Q to quit");
                     //Console.WriteLine("6) Edit Post");
                     //Console.WriteLine("Enter q to quit");
@@ -59,7 +69,7 @@ namespace FinalProject
                         string Option = Console.ReadLine();
 
                         Console.WriteLine("{0,-15}{1,-40}{2,-15}", "ProductID", "Product Name", "Product Status");
-                        Console.WriteLine("{0,-15}{1,-40}{2,-15}", "---------", "--------------", "--------------");
+                        Console.WriteLine("{0,-15}{1,-40}{2,-15}", "---------", "-------------", "--------------");
 
                         if (Option == "1")  //Display all products
                         {
@@ -100,7 +110,7 @@ namespace FinalProject
                             foreach (var item in ActiveQuery)
                             {
 
-                                Console.WriteLine($"{item.ProductId,-15}{item.ProductName,-40}{"Active",-15}");  
+                                Console.WriteLine($"{item.ProductId,-15}{item.ProductName,-40}{"Active",-15}");
                             }
 
                             Console.WriteLine();
@@ -189,11 +199,11 @@ namespace FinalProject
 
                     else if (choice == "4")      // Display a specific product
                     {
-                    var db = new ProductCategoriesContext();
-                    var query = db.Products.OrderBy(b => b.ProductId);
+                        var db = new ProductCategoriesContext();
+                        var query = db.Products.OrderBy(b => b.ProductId);
 
-                    Console.Write("Enter ProductID for the product you want to display: ");
-                    Console.WriteLine();
+                        Console.Write("Enter ProductID for the product you want to display: ");
+                        Console.WriteLine();
 
                         if (int.TryParse(Console.ReadLine(), out int ProductId))
                         {
@@ -217,6 +227,40 @@ namespace FinalProject
                         }
                         Console.WriteLine();
                     }
+
+                    else if (choice == "5")       //Display Categories
+                    { 
+                        var db = new ProductCategoriesContext();
+                        var query = db.Categories.OrderBy(b => b.CategoryName);
+ 
+                        Console.WriteLine("{0,-15}{1,-20}{2,-50}", "Category ID", "Category Name", "Description");
+                        Console.WriteLine("{0,-15}{1,-20}{2,-50}", "-----------", "-------------", "------------");
+
+                        foreach (var item in query)
+                          {
+                               Console.WriteLine($"{item.CategoryID,-15}{item.CategoryName,-20}{item.Description,-50}");
+                          }
+
+                        Console.WriteLine();
+                        Console.WriteLine($"{query.Count()} Categories returned");
+                        Console.WriteLine();                       
+                    } 
+
+                    else if (choice == "6")       //Add Category
+                    {
+                        //Add Category
+                    }
+
+                    else if (choice == "7")       //Edit Category
+                    {
+                        //Edit Category
+                    }
+
+                    else if (choice == "8")       //Display a Specific Category
+                    {
+                        //Display a Specific Category
+                    }
+
 
                 } while (choice.ToLower() != "q");
             }
