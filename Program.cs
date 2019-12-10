@@ -248,7 +248,44 @@ namespace FinalProject
 
                     else if (choice == "6")       //Add Category
                     {
-                        //Add Category
+                        Console.Write("Enter a name for a new Category: ");
+                        var category = new Category { CategoryName = Console.ReadLine() };
+
+                        ValidationContext context = new ValidationContext(category, null, null);
+                        List<ValidationResult> results = new List<ValidationResult>();
+
+                        var isValid = Validator.TryValidateObject(category, context, results, true);
+                        if (isValid)
+                        {
+                            var db = new ProductCategoriesContext();
+
+                            // check for unique name
+                            if (db.Categories.Any(b => b.CategoryName == category.CategoryName))
+                            {
+                                // generate validation error
+                                isValid = false;
+                                results.Add(new ValidationResult("Category name exists", new string[] { "CategoryName" }));
+                            }
+                            else
+                            {
+                                logger.Info("Validation passed");
+
+                                // Enter the rest of the fields for the new category 
+
+                                Console.Write("Enter Category Description: ");
+                                category.Description = Console.ReadLine();
+
+                                db.AddCategory(category);
+                                logger.Info("Category added - {CategoryName}", category.CategoryName);
+                            }
+                        }
+                        if (!isValid)
+                        {
+                            foreach (var result in results)
+                            {
+                                logger.Error($"{result.MemberNames.First()} : {result.ErrorMessage}");
+                            }
+                        }
                     }
 
                     else if (choice == "7")       //Edit Category
