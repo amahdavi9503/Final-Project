@@ -33,7 +33,7 @@ namespace FinalProject
                     Console.WriteLine("5) Display Categories");
                     Console.WriteLine("6) Add Category");
                     Console.WriteLine("7) Edit Category");
-                    Console.WriteLine("8) Display a Specific Category");
+                    Console.WriteLine("8) Display Categories & Their Products");
                     Console.WriteLine();
                     Console.WriteLine("Q to quit");
                     //Console.WriteLine("6) Edit Post");
@@ -221,30 +221,30 @@ namespace FinalProject
                                                       $"Qty Per Unit: {item.QuantityPerUnit}\n" +
                                                       $"Unit Price: {item.UnitPrice}\nUnits in Stock: {item.UnitsInStock}\n" +
                                                       $"Units on Order: {item.UnitsOnOrder}\nReorder Level: {item.ReorderLevel}\n" +
-                                                      $"Discontinued Flag: {item.Discontinued}");   //$"SupplierID: {item.SupplierId}\n
+                                                      $"Discontinued Flag: {item.Discontinued}");   
                                 }
                             }
                         }
                         Console.WriteLine();
                     }
 
-                    else if (choice == "5")       //Display Categories
-                    { 
+                    else if (choice == "5")       //Display all Categories
+                    {
                         var db = new ProductCategoriesContext();
                         var query = db.Categories.OrderBy(b => b.CategoryName);
- 
+
                         Console.WriteLine("{0,-15}{1,-20}{2,-50}", "Category ID", "Category Name", "Description");
                         Console.WriteLine("{0,-15}{1,-20}{2,-50}", "-----------", "-------------", "------------");
 
                         foreach (var item in query)
-                          {
-                               Console.WriteLine($"{item.CategoryID,-15}{item.CategoryName,-20}{item.Description,-50}");
-                          }
+                        {
+                            Console.WriteLine($"{item.CategoryID,-15}{item.CategoryName,-20}{item.Description,-50}");
+                        }
 
                         Console.WriteLine();
                         Console.WriteLine($"{query.Count()} Categories returned");
-                        Console.WriteLine();                       
-                    } 
+                        Console.WriteLine();
+                    }
 
                     else if (choice == "6")       //Add Category
                     {
@@ -290,14 +290,97 @@ namespace FinalProject
 
                     else if (choice == "7")       //Edit Category
                     {
-                        //Edit Category
+                        // Display Categories
+                        var db = new ProductCategoriesContext();
+                        var query = db.Categories.OrderBy(b => b.CategoryName);
+
+                        Console.WriteLine($"{query.Count()} Categories returned");
+                        foreach (var item in query)
+                        {
+                            Console.WriteLine($"  {item.CategoryID}) {item.CategoryName}");
+                        }
+
+                        Console.WriteLine();
+                        Console.Write("Choose the CategoryID to edit:");
+                        Console.WriteLine();
+
+                        int Id = Int32.Parse(Console.ReadLine());
+                        Category EditCatg = db.Categories.FirstOrDefault(p => p.CategoryID == Id);
+
+                        if (EditCatg != null)
+                        {
+                            Console.Write($"Enter new Category Name for { EditCatg.CategoryName}: ");
+                            EditCatg.CategoryName = Console.ReadLine();
+                            Console.WriteLine();
+
+                            Console.Write($"Enter new Description: ");
+                            EditCatg.Description = Console.ReadLine();
+                            Console.WriteLine();
+
+                            db.EditCategory(EditCatg);
+                            logger.Info("Category (id: {categoryid}) updated", EditCatg.CategoryID);
+                        }
                     }
 
-                    else if (choice == "8")       //Display a Specific Category
-                    {
-                        //Display a Specific Category
-                    }
+                    else if (choice == "8")       //Display All Categories OR a Specific Category and its related active products
+                    { 
+                        // Display Categories
+                        var db = new ProductCategoriesContext();
+                        var query = db.Categories.Include("Products").OrderBy(b => b.CategoryID);  //Eager Loading
 
+                        Console.WriteLine("Select the category's products to display:");
+                        Console.WriteLine("0) Products from all categories");
+                        foreach (var item in query)
+                        {
+                            Console.WriteLine($"{item.CategoryID}) Display Products from {item.CategoryName}");
+                        }
+
+                        if (int.TryParse(Console.ReadLine(), out int CategoryID))
+                        {
+                            IEnumerable<Product> Products;
+                            if (CategoryID != 0 && db.Categories.Count(b => b.CategoryID == CategoryID) == 0)
+                            {
+                                logger.Error("There are no Categories saved with that Id");
+                            }
+                            else
+                            {
+                                //Products = db.Products.OrderBy(p => p.ProductName);
+                                if (CategoryID == 0)   // display all categories & their products
+                                {
+                                    // display all Active products from all categories
+                                    Products = db.Products.Where(b => b.Discontinued == false).OrderBy(p => p.ProductName);
+
+                                    foreach (var category in query)
+                                    {
+                                        Console.WriteLine($"Category: {category.CategoryName}");
+                                        foreach (var product in category.Products)
+                                        {
+                                            //Console.WriteLine($"   {product.ProductName}");
+                                            Console.WriteLine($"   {product.ProductName}");
+                                        }
+                                        Console.WriteLine();
+                                    }
+
+                                    Console.WriteLine();
+                                }
+                                else
+                                {
+                                    // display Active products from selected cateogry
+                                    Products = db.Products.Where(p => p.CategoryId == CategoryID).Where(p => p.Discontinued == false).OrderBy(p => p.ProductName);
+
+                                    Console.WriteLine($"List of Products for the CategoryID: {CategoryID}");
+                                    foreach (var item in Products)
+                                    {
+                                        Console.WriteLine($"   {item.ProductName}");
+                                    }
+                                    Console.WriteLine($"{Products.Count()} product(s) returned");
+                                    Console.WriteLine();
+                                }
+                            }
+
+
+                        } 
+                    }
 
                 } while (choice.ToLower() != "q");
             }

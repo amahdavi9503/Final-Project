@@ -20,6 +20,14 @@ namespace FinalProject.Models
             this.SaveChanges();
         }
 
+        public void EditCategory(Category UpdatedCategory)
+        {
+            Category category = this.Categories.Find(UpdatedCategory.CategoryID);
+            category.CategoryName = UpdatedCategory.CategoryName;
+            category.Description = UpdatedCategory.Description;
+            this.SaveChanges();
+        }
+
         public void EditProduct(Product UpdatedProduct)
         {
             Product product = this.Products.Find(UpdatedProduct.ProductId);

@@ -24,6 +24,7 @@ namespace FinalProject.Models
 
         [Required]
         public bool Discontinued { get; set; }
+       // public object Category { get; internal set; }  //**
     }
 }
 
